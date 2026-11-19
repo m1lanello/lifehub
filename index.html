@@ -407,7 +407,18 @@ body.dragging .drop{display:grid}
 }
 .cyp{margin:0 0 .7rem}
 </style>
+<style id="lh-sync">
+#dsf,#dsy,#dsc,#dgd{max-width:min(520px,calc(100vw - 24px))}
+#dsy label,#dsy .chk{display:block;margin:.55rem 0}
+#dsy input[type=text],#dsy input[type=password]{display:block;width:100%;margin-top:.25rem;padding:.55rem .7rem;border:1px solid var(--bd);border-radius:10px;background:var(--in);color:var(--tx);font:inherit}
+#dsy .chk input{display:inline;width:auto;margin:0 .4rem 0 0}
+#dsy details{margin:.6rem 0;font-size:.85rem}#dsy summary{cursor:pointer;font-weight:700}
+.sfl{max-height:46vh;overflow:auto;border-top:1px solid var(--bd)}
+.sfr{display:flex;align-items:center;justify-content:space-between;gap:.7rem;padding:.6rem 0;border-bottom:1px solid var(--bd)}
+@media(pointer:coarse){#dsf .btn,#dsy .btn,#dsc .btn,#dgd .btn{min-height:40px}}
+</style>
 </head>
+
 <body>
 <header class="bar">
   
@@ -1558,7 +1569,7 @@ function calDay(d){
   const l=calEvents(d,d,true).ev.sort(cSortT),dt=new Date(d+'T12:00');let ppl=[],meta=CAL.meta;try{meta=JSON.parse(calRun(calMeta));CAL.meta=meta}catch(e){}ppl=[...new Set([...(meta.people||[]),...(meta.names||[])])];
   const pre=(CAL.addType||'Personal').toLowerCase();CAL.addType=null;
   dlg.innerHTML=`<form method="dialog"><h2>${dt.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</h2><div class="cdl">${l.map(e=>`<div class="cdi" style="--c:${cCol(e)}"><span class="cdt">${e.tm?e.tm+(e.te?'–'+e.te:''):'All day'}</span><div style="flex:1;min-width:0"><b class="${e.done?'dn':''}">${cIcon(e)} ${esc(e.t)}</b><div class="cmu">${e.k==='task'?esc(cType(e.g).l)+' task':CATS[e.k].l.replace(' (week view)','')}${e.who?' · 👤 '+esc(e.who):''}${e.rp?' · ↻ '+RPN[e.rp]:''}${e.virt?' (repeat of an earlier task)':''}${e.note?' · '+esc(e.note):''}</div></div>${e.k==='task'&&!e.virt?`<div class="cact"><input type="date" class="cmv" data-mvid="${e.id}" value="${e.d}" title="Move to another day" aria-label="Move to another day"><button type="button" class="btn s" data-tg="${e.id}">${e.done?'↺ Reopen':'✓ Done'}</button></div>`:''}</div>`).join('')||'<div class="cmu">Nothing planned for this day.</div>'}</div>
-  <div class="cad"><b>➕ Add a task on this day</b><div class="cr"><input id="cad-t" placeholder="What needs doing?" maxlength="80"><input id="cad-h" type="time" value="09:00" aria-label="Time"></div><div class="cr"><input id="cad-w" placeholder="Who? (optional)" list="cad-p" maxlength="30"><datalist id="cad-p">${ppl.map(p=>`<option value="${esc(p)}">`).join('')}</datalist><select id="cad-g" aria-label="Type">${calTypes().map(([k,v])=>`<option value="${esc(v)}"${k===pre?' selected':''}>${esc(cType(v).i+' '+v)}</option>`).join('')}</select><select id="cad-r" aria-label="Repeat"><option value="">No repeat</option><option value="d">Daily</option><option value="w">Weekly</option><option value="2w">Every 2 weeks</option><option value="m">Monthly</option><option value="y">Yearly</option></select><input id="cad-u" type="date" title="Repeat until (optional)" aria-label="Repeat until"><button type="button" class="btn p" data-addgo="${d}">Add</button></div><div class="err" id="cad-e"></div></div>
+  <div class="cad"><b>➕ Add a task</b><div class="cr"><input id="cad-t" placeholder="What needs doing?" maxlength="80"><input id="cad-d" type="date" value="${d}" aria-label="Date" title="Date for this task" required><input id="cad-h" type="time" value="09:00" aria-label="Time"></div><div class="cr"><input id="cad-w" placeholder="Who? (optional)" list="cad-p" maxlength="30"><datalist id="cad-p">${ppl.map(p=>`<option value="${esc(p)}">`).join('')}</datalist><select id="cad-g" aria-label="Type">${calTypes().map(([k,v])=>`<option value="${esc(v)}"${k===pre?' selected':''}>${esc(cType(v).i+' '+v)}</option>`).join('')}</select><select id="cad-r" aria-label="Repeat"><option value="">No repeat</option><option value="d">Daily</option><option value="w">Weekly</option><option value="2w">Every 2 weeks</option><option value="m">Monthly</option><option value="y">Yearly</option></select><input id="cad-u" type="date" title="Repeat until (optional)" aria-label="Repeat until"><button type="button" class="btn p" data-addgo="${d}">Add</button></div><div class="err" id="cad-e"></div></div>
   <div class="acts"><button class="btn" value="x">Close</button></div></form>`;
   if(!dlg.open)dlg.showModal();
 }
@@ -1567,7 +1578,7 @@ function calDlgClick(ev){
   const g=ev.target.closest('[data-addgo],[data-tg]');if(!g)return;
   try{
     if(g.dataset.tg)calRun(calToggle,+g.dataset.tg);
-    else{const q=s=>document.getElementById(s),t=q('cad-t').value.trim();if(!t){q('cad-e').textContent='Type a title first.';return}calRun(calAddTask,t,g.dataset.addgo,q('cad-h').value,q('cad-w').value.trim(),q('cad-g').value,q('cad-r').value,q('cad-r').value?q('cad-u').value:'');toast('Task added ✓','ok',1800)}
+    else{const q=s=>document.getElementById(s),t=q('cad-t').value.trim(),dd=(q('cad-d')&&q('cad-d').value)||g.dataset.addgo;if(!t){q('cad-e').textContent='Type a title first.';return}calRun(calAddTask,t,dd,q('cad-h').value,q('cad-w').value.trim(),q('cad-g').value,q('cad-r').value,q('cad-r').value?q('cad-u').value:'');toast('Task added for '+dmy(dd)+' ✓','ok',2600);CAL.day=dd}
     calAfter();
   }catch(e){const x=document.getElementById('cad-e');if(x)x.textContent=e.message}
 }
@@ -1689,6 +1700,7 @@ function openSettings(){
     d.innerHTML=`<form method="dialog"><h2>⚙ Settings</h2>
 <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin:.2rem 0 .8rem"><button type="button" class="btn" data-sq="bk">⬇ Backup</button><button type="button" class="btn" data-sq="rs">⬆ Restore</button><button type="button" class="btn" data-sq="sr">🔍 Search</button><button type="button" class="btn" data-sq="ics">📅 Export .ics</button></div>
 <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 .8rem"><button type="button" class="btn" data-sq="arr">⇅ Arrange Home tabs</button><button type="button" class="btn" data-sq="prt">🖨 Print Home report</button></div>
+<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 .8rem"><button type="button" class="btn" data-sq="sy">☁ Sync devices</button><button type="button" class="btn" data-sq="sf">🛟 Safety copies</button></div>
 <label><button type="button" class="btn" id="stth">🌓 Switch light / dark theme</button></label>
 <label class="chk"><input type="checkbox" id="stpv"> Hide amounts everywhere</label>
 <label class="chk"><input type="checkbox" id="staw"> Blur amounts while this tab is in the background</label>
@@ -1702,7 +1714,7 @@ function openSettings(){
 <div class="acts"><button class="btn" value="x">Done</button></div></form>`;
     document.body.appendChild(d);
     d.addEventListener('change',e=>{const t=e.target;if(t.id==='stpv'){if((priv==='1')!==t.checked)togglePriv()}else if(t.id==='staw')ST.away=t.checked?1:0;else if(t.id==='stdf')ST.df=t.value;else if(t.id==='stws')ST.ws=+t.value;else if(t.id==='sttf')ST.tf=t.value;else if(t.id==='stbk')ST.bk=+t.value;saveST();paintChip();renderCal();try{refreshOv()}catch(_){}if(current==='school')renderSchool()});
-    d.addEventListener('click',e=>{const q=e.target.closest('[data-sq]');if(q){d.close();({bk:exportDialog,rs:importPick,sr:openSearch,ics:exportIcs,arr:()=>homeBtn('reord'),prt:()=>homeBtn('prb')})[q.dataset.sq]();return}if(e.target.id==='stth')toggleTheme();const c=e.target.closest('[data-kc]');if(c)clearKey(c.dataset.kc)})}
+    d.addEventListener('click',e=>{const q=e.target.closest('[data-sq]');if(q){d.close();({bk:exportDialog,rs:importPick,sr:openSearch,ics:exportIcs,arr:()=>homeBtn('reord'),prt:()=>homeBtn('prb'),sy:openSync,sf:openSafety})[q.dataset.sq]();return}if(e.target.id==='stth')toggleTheme();const c=e.target.closest('[data-kc]');if(c)clearKey(c.dataset.kc)})}
   $('#stpv').checked=priv==='1';$('#staw').checked=!!ST.away;$('#stdf').value=ST.df;$('#stws').value=String(ST.ws);$('#sttf').value=ST.tf;paintKeys();$('#stbk').value=String(ST.bk);
   if(!d.open)d.showModal();
 }
@@ -1710,7 +1722,325 @@ $('#stb').onclick=openSettings;
 window.__hub={exportDialog,importPick,toggleTheme};
 
 /* ---------- start ---------- */
-(function init(){
+/* ================= SAFETY NET + DEVICE SYNC =================
+   1. asks the browser to keep this app's data permanently
+   2. keeps rolling safety copies and stops you silently losing balances
+   3. optional encrypted sync through a private GitHub repository            */
+const SD_KEYS=['home_ops_v1','home_ops_m','lh_uc_type','lifehub_kitchen',
+ 'networth_intel_accounts_v7','networth_intel_gold_v2','networth_intel_silver_v1','networth_intel_equities_v1','networth_intel_snapshots_v5','networth_intel_settings_v1','networth_plus_v1','networth_research_v1','networth_currency_pref','networth_ai_keys_v2','networth_intel_gemini_key_v1','networth_intel_finnhub_key','networth_intel_av_key','networth_fmp_key',
+ 'lifehub_school','lifehub_settings','lifehub_calpc','lifehub_layout_v1','lifehub_att_hide'];
+const lsMap=()=>{const o={};SD_KEYS.forEach(k=>{const v=LS.get(k);if(v!==null)o[k]=v});return o};
+const hashStr=s=>{let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)+'.'+s.length.toString(36)};
+const SIG_SKIP=['networth_intel_snapshots_v5'];/* the Net Worth app updates its history entries by itself; they ride along with the next real change */
+const sigOf=m=>{m=m||lsMap();return hashStr(SD_KEYS.filter(k=>!SIG_SKIP.includes(k)).map(k=>k+'='+(m[k]||'')).join('\u0001'))};
+function mergeSnaps(localStr,remoteStr){
+  try{const L=JSON.parse(localStr),R=JSON.parse(remoteStr);if(!Array.isArray(L)||!Array.isArray(R))return remoteStr;
+    const have=new Set(R.map(x=>x&&x.date)),extra=L.filter(x=>x&&x.date&&!have.has(x.date)),all=R.concat(extra);
+    if(extra.length&&all.every(x=>x&&!isNaN(Date.parse(x.date))))all.sort((a,b)=>Date.parse(a.date)-Date.parse(b.date));
+    return JSON.stringify(all)}catch(e){return remoteStr}
+}
+const fmtT=t=>new Date(t).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+function metrics(m){
+  m=m||lsMap();let n=0,nz=0,ok=true;
+  try{const a=JSON.parse(m.networth_intel_accounts_v7||'null');if(Array.isArray(a)){n=a.length;a.forEach(x=>{if(x&&+x.amount)nz++})}}catch(e){ok=false}
+  return{n,nz,home:m.home_ops_v1?1:0,ok};
+}
+function suspicious(cur,ref){
+  if(!ref)return null;const r=ref.m;
+  if(r.nz>=2&&cur.nz===0)return'All of your Net Worth balances (including the house value and bank accounts) are empty';
+  if(r.nz>=4&&cur.nz<r.nz*.4)return'Many of your Net Worth balances have disappeared';
+  if(r.home&&!cur.home)return'Your Home Operations data is missing';
+  return null;
+}
+const bestRef=l=>(l||[]).find(x=>x.m&&(x.m.nz>0||x.m.home))||null;
+
+/* ----- storage for safety copies (separate IndexedDB) ----- */
+const sdb=()=>sdb.p||(sdb.p=new Promise((res,rej)=>{const r=indexedDB.open('lifehub_safety',1);r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore('snaps',{keyPath:'t'});d.createObjectStore('kv')};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
+const sx=async(st,mode,fn)=>{const d=await sdb();return new Promise((res,rej)=>{const t=d.transaction(st,mode),rq=fn(t.objectStore(st));t.oncomplete=()=>res(rq&&rq.result);t.onerror=t.onabort=()=>rej(t.error)})};
+const snapList=async()=>{try{return(await sx('snaps','readonly',s=>s.getAll())).sort((a,b)=>b.t-a.t)}catch(e){return[]}};
+const guardNow=list=>{const ref=bestRef(list);if(!ref||LS.get('lifehub_guard_ack')===String(ref.t))return null;return suspicious(metrics(),ref)};
+let snapFlagged='';
+function snapFlag(w){
+  if(snapFlagged===w)return;snapFlagged=w;
+  toast('⚠ '+w+'. Automatic copies and sync are paused so your good copy is not overwritten.','er',25000,{label:'Review',fn:openSafety});
+}
+async function snapTake(why,force){
+  const m=lsMap();if(!Object.keys(m).length)return null;
+  const list=await snapList(),sg=sigOf(m);
+  if(!force){if(list[0]&&list[0].sig===sg)return null;if(guardNow(list))return null}
+  const rec={t:Date.now(),why:why||'auto',sig:sg,m:metrics(m),ls:m};
+  await sx('snaps','readwrite',s=>s.put(rec));
+  /* keep the newest 8, the newest of each of the last 21 days, and the best known-good copy */
+  const all=await snapList(),keep=new Set(all.slice(0,8).map(x=>x.t)),days=new Set(),b=bestRef(all);if(b)keep.add(b.t);
+  all.forEach(x=>{const dk=new Date(x.t).toDateString();if(!days.has(dk)&&Date.now()-x.t<21*864e5){days.add(dk);keep.add(x.t)}});
+  for(const x of all)if(!keep.has(x.t))await sx('snaps','readwrite',s=>s.delete(x.t));
+  return rec;
+}
+let snapBusy=false;
+async function snapTick(){
+  if(snapBusy)return;snapBusy=true;
+  try{
+    const list=await snapList(),w=guardNow(list);
+    if(w){snapFlag(w);return}
+    snapFlagged='';
+    const last=list[0];
+    if(!last||(last.sig!==sigOf()&&Date.now()-last.t>=6e5))await snapTake('auto');
+  }catch(e){console.warn('safety copy',e)}finally{snapBusy=false}
+}
+async function restoreSnap(t){
+  const r=(await snapList()).find(x=>x.t===t);if(!r)throw new Error('That safety copy no longer exists.');
+  await snapTake('before restore',true);
+  await sx('kv','readwrite',s=>s.put({ls:r.ls,note:'Restored the safety copy from '+fmtT(r.t)+'.'},'pending'));
+  location.reload();
+}
+const persisted=()=>navigator.storage&&navigator.storage.persisted?navigator.storage.persisted().catch(()=>false):Promise.resolve(false);
+function storageAsk(){try{if(navigator.storage&&navigator.storage.persist)persisted().then(p=>{if(!p)navigator.storage.persist().catch(()=>{})})}catch(e){}}
+
+function guardDialog(w,ref){
+  return new Promise(res=>{
+    let d=$('#dgd');if(!d){d=document.createElement('dialog');d.id='dgd';d.setAttribute('aria-label','Data check');document.body.appendChild(d)}
+    d.innerHTML=`<form method="dialog"><h2>⚠ Your data looks wiped</h2><p>${esc(w)}, but your safety copy from <b>${fmtT(ref.t)}</b> had ${ref.m.nz} account${ref.m.nz===1?'':'s'} with balances.</p><p class="cmu">This is what happens when the browser loses its stored data. Restoring takes a second. What you have now is saved as another safety copy first.</p><div class="acts" style="flex-wrap:wrap"><button type="button" class="btn" data-g="keep">Keep what I have</button><button type="button" class="btn p" data-g="restore">Restore safety copy</button></div></form>`;
+    let done=false;
+    d.onclick=async e=>{const b=e.target.closest('[data-g]');if(!b||done)return;done=true;
+      if(b.dataset.g==='keep'){LS.set('lifehub_guard_ack',String(ref.t));d.close();res('keep')}
+      else{try{await restoreSnap(ref.t)}catch(er){done=false;toast(er.message,'er',8000)}}};
+    d.oncancel=ev=>ev.preventDefault();
+    d.showModal();
+  });
+}
+async function lhBoot(){
+  try{
+    const p=await sx('kv','readonly',s=>s.get('pending'));
+    if(p&&p.ls){
+      await sx('kv','readwrite',s=>s.delete('pending'));
+      Object.keys(p.ls).forEach(k=>LS.set(k,p.ls[k]));
+      if(p.note){try{sessionStorage.setItem('lh_note',p.note)}catch(e){}}
+      location.reload();return new Promise(()=>{});
+    }
+    storageAsk();
+    const list=await snapList(),w=guardNow(list);
+    if(w){await guardDialog(w,bestRef(list))}
+  }catch(e){console.warn('start check',e)}
+}
+
+/* ----- Safety copies dialog ----- */
+async function paintSafety(){
+  const d=$('#dsf'),list=await snapList(),per=await persisted();
+  d.innerHTML=`<form method="dialog"><h2>🛟 Safety copies</h2><p class="cmu">This device keeps automatic copies of your data. If balances or Home data ever disappear, restore one here. Documents are not part of these copies (they are covered by Backup and Sync).</p><div class="note${per?' ok':''}">${per?'✅ Your browser has promised to keep this app’s data permanently.':'⚠ The browser has not promised to keep this data. Installing the app to your Home Screen usually fixes that, and Sync protects you either way.'}</div><div style="margin:.7rem 0"><button type="button" class="btn" data-sf="now">＋ Take a copy now</button></div><div class="sfl">${list.length?list.map(r=>`<div class="sfr"><div><b>${fmtT(r.t)}</b><div class="cmu">${esc(r.why)} · ${plural(r.m.nz,'account')} with a balance${r.m.home?'':' · no Home data'}</div></div><button type="button" class="btn" data-sf="r:${r.t}">Restore</button></div>`).join(''):'<div class="cmu">No copies yet. The first one is taken a few seconds after the app opens.</div>'}</div><div class="acts"><button class="btn" value="x">Close</button></div></form>`;
+}
+async function openSafety(){
+  let d=$('#dsf');
+  if(!d){d=document.createElement('dialog');d.id='dsf';d.setAttribute('aria-label','Safety copies');document.body.appendChild(d);
+    d.addEventListener('click',async e=>{const b=e.target.closest('[data-sf]');if(!b)return;const a=b.dataset.sf;
+      try{
+        if(a==='now'){const r=await snapTake('manual',true);toast(r?'🛟 Safety copy saved.':'Nothing to copy yet.','ok',3000);paintSafety()}
+        else if(a.startsWith('r:')){const t=+a.slice(2);if(confirm('Restore the copy from '+fmtT(t)+'?\n\nYour current data is saved as a new safety copy first. The app will reload.'))await restoreSnap(t)}
+      }catch(er){toast(er.message||String(er),'er',8000)}});
+  }
+  await paintSafety();if(!d.open)d.showModal();
+}
+
+/* ----- Sync via a private GitHub repository (encrypted on this device before upload) ----- */
+const SYK='lifehub_sync_cfg',GH='https://api.github.com';
+const syCfg=()=>{try{return JSON.parse(LS.get(SYK)||'null')}catch(e){return null}};
+const sySave=c=>LS.set(SYK,JSON.stringify(c));
+let syBusy=false,syKey=null,syNote='',syUI=false;
+const enc8=s=>new TextEncoder().encode(s),dec8=u=>new TextDecoder().decode(u);
+async function gh(c,path,o){
+  o=o||{};
+  const r=await fetch(GH+path,{method:o.method||'GET',headers:Object.assign({Authorization:'Bearer '+c.token,Accept:o.raw?'application/vnd.github.raw+json':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},o.body?{'Content-Type':'application/json'}:{}),body:o.body?JSON.stringify(o.body):undefined});
+  if(r.status===404&&o.ok404)return null;
+  if(!r.ok){let m='';try{m=(await r.json()).message}catch(e){}const e=new Error('GitHub '+r.status+(m?': '+m:''));e.status=r.status;throw e}
+  return o.raw?r.arrayBuffer():r.json();
+}
+const brq=c=>'?ref='+encodeURIComponent(c.branch);
+async function syEnc(key,u8){const iv=crypto.getRandomValues(new Uint8Array(12)),ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,u8)),o=new Uint8Array(12+ct.length);o.set(iv);o.set(ct,12);return o}
+async function syDec(key,u8){return new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:u8.slice(0,12)},key,u8.slice(12)))}
+async function syPut(c,path,u8,sha,msg){
+  const body={message:msg,content:b64(u8),branch:c.branch};if(sha)body.sha=sha;
+  const r=await gh(c,'/repos/'+c.repo+'/contents/'+path,{method:'PUT',body});
+  return r&&r.content&&r.content.sha;
+}
+async function syKeyFor(c,create){
+  const raw=await gh(c,'/repos/'+c.repo+'/contents/lifehub/meta.json'+brq(c),{raw:true,ok404:true});
+  if(raw){
+    const meta=JSON.parse(dec8(new Uint8Array(raw)));
+    if(syKey&&syKey.salt===meta.salt&&syKey.pass===c.pass)return syKey.key;
+    const key=await deriveKey(c.pass,unb64(meta.salt),meta.iter);
+    try{if(dec8(await syDec(key,unb64(meta.chk)))!=='lifehub')throw 0}catch(e){throw new Error('That sync passphrase does not match this repository.')}
+    syKey={salt:meta.salt,pass:c.pass,key};return key;
+  }
+  if(!create)throw new Error('This repository has no Life Hub data yet.');
+  const salt=crypto.getRandomValues(new Uint8Array(16)),iter=600000,key=await deriveKey(c.pass,salt,iter);
+  const meta={v:1,salt:b64(salt),iter,chk:b64(await syEnc(key,enc8('lifehub')))};
+  await syPut(c,'lifehub/meta.json',enc8(JSON.stringify(meta)),null,'Life Hub: set up sync');
+  syKey={salt:meta.salt,pass:c.pass,key};return key;
+}
+async function syRemote(c){
+  const dir=await gh(c,'/repos/'+c.repo+'/contents/lifehub'+brq(c),{ok404:true}),f={};
+  (Array.isArray(dir)?dir:[]).forEach(x=>{f[x.name]=x});
+  return{sha:f['data.bin']?f['data.bin'].sha:null};
+}
+async function syDocNames(c){
+  const l=await gh(c,'/repos/'+c.repo+'/contents/lifehub/docs'+brq(c),{ok404:true});
+  return Array.isArray(l)?l.map(x=>x.name.replace(/\.bin$/,'')):[];
+}
+/* documents live in the Home app's own database; the hub reads it directly (same schema, so it is safe to open) */
+const ddb=()=>ddb.p||(ddb.p=new Promise((res,rej)=>{const r=indexedDB.open('home_ops_docs',1);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains('cfg'))d.createObjectStore('cfg');if(!d.objectStoreNames.contains('docs'))d.createObjectStore('docs',{keyPath:'id'})};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}));
+const dx=async(st,mode,fn)=>{const d=await ddb();return new Promise((res,rej)=>{const t=d.transaction(st,mode),rq=fn(t.objectStore(st));t.oncomplete=()=>res(rq&&rq.result);t.onerror=t.onabort=()=>rej(t.error)})};
+const safeName=id=>String(id).replace(/[^\w.-]/g,'_');
+async function docsLocal(){
+  try{const cfg=await dx('cfg','readonly',s=>s.get('main')),fo=await dx('cfg','readonly',s=>s.get('folders')),ids=await dx('docs','readonly',s=>s.getAllKeys());
+    return{cfg:cfg?{salt:cfg.salt,chk:cfg.chk}:null,fo:fo||null,ids}}catch(e){return{cfg:null,fo:null,ids:[]}}
+}
+async function syDoPush(c,remote){
+  const list=await snapList();if(guardNow(list))throw new Error('Not uploaded: your data looks wiped compared with your safety copy. Open Settings → Safety copies first.');
+  if(syUI)busy('Syncing…');
+  const key=await syKeyFor(c,true),m=lsMap(),sg=sigOf(m),L=await docsLocal(),have=new Set(await syDocNames(c)),skipped=[];
+  const todo=L.ids.filter(id=>!have.has(safeName(id)));let i=0;
+  for(const id of todo){
+    i++;if(syUI)busy('Uploading document '+i+' of '+todo.length+'…');
+    const row=await dx('docs','readonly',s=>s.get(id));if(!row)continue;
+    const json=JSON.stringify({id:row.id,m:b64(row.m),f:b64(row.f)});
+    if(json.length>70e6){skipped.push(id);continue}
+    await syPut(c,'lifehub/docs/'+safeName(id)+'.bin',await syEnc(key,enc8(json)),null,'Life Hub: document');
+  }
+  if(syUI)busy('Uploading data…');
+  const payload={app:'life-hub-sync',v:1,t:new Date().toISOString(),ls:m,docs:{cfg:L.cfg,fo:L.fo,list:L.ids.filter(id=>!skipped.includes(id)).map(id=>({id,n:safeName(id)}))}};
+  let sha;
+  try{sha=await syPut(c,'lifehub/data.bin',await syEnc(key,enc8(JSON.stringify(payload))),remote.sha,'Life Hub: sync '+new Date().toISOString().slice(0,16).replace('T',' '))}
+  catch(e){if(e.status===409||e.status===422)throw new Error('Another device synced at the same moment. Run Sync again.');throw e}
+  c.last={sha,sig:sg};c.lastPush=Date.now();c.err='';sySave(c);
+  if(skipped.length)toast('⚠ '+plural(skipped.length,'document')+' over 50 MB could not be uploaded.','er',9000);
+}
+async function syDoPull(c,remote){
+  if(syUI)busy('Downloading…');
+  const key=await syKeyFor(c,false);
+  const buf=await gh(c,'/repos/'+c.repo+'/contents/lifehub/data.bin'+brq(c),{raw:true});
+  let P;try{P=JSON.parse(dec8(await syDec(key,new Uint8Array(buf))))}catch(e){throw new Error('Could not open the synced data (wrong passphrase or damaged file).')}
+  if(P.app!=='life-hub-sync'||!P.ls)throw new Error('The synced file is not a Life Hub file.');
+  const D=P.docs;
+  if(D&&D.list&&D.list.length){
+    const L=await docsLocal();let go=true;
+    if(L.cfg&&D.cfg&&L.cfg.salt!==D.cfg.salt&&L.ids.length){go=confirm('The documents vault from your other device uses a different passphrase from the one on this device.\n\nReplace the documents on this device with the synced ones?');if(go)await dx('docs','readwrite',s=>s.clear())}
+    if(go){
+      const have=new Set((await docsLocal()).ids.map(String)),need=D.list.filter(x=>!have.has(String(x.id)));let i=0;
+      if(D.cfg)await dx('cfg','readwrite',s=>s.put({salt:D.cfg.salt,chk:D.cfg.chk,lastBackup:null},'main'));
+      if(D.fo)await dx('cfg','readwrite',s=>s.put(D.fo,'folders'));
+      for(const x of need){
+        i++;if(syUI)busy('Downloading document '+i+' of '+need.length+'…');
+        const b=await gh(c,'/repos/'+c.repo+'/contents/lifehub/docs/'+x.n+'.bin'+brq(c),{raw:true,ok404:true});if(!b)continue;
+        const r=JSON.parse(dec8(await syDec(key,new Uint8Array(b))));
+        await dx('docs','readwrite',s=>s.put({id:r.id,m:unb64(r.m).buffer,f:unb64(r.f).buffer}));
+      }
+    }
+  }
+  await snapTake('before sync load',true);
+  const ls=Object.assign({},P.ls),SNK='networth_intel_snapshots_v5';
+  if(ls[SNK]&&LS.get(SNK))ls[SNK]=mergeSnaps(LS.get(SNK),ls[SNK]);
+  const merged=Object.assign(lsMap(),ls);
+  await sx('kv','readwrite',s=>s.put({ls,note:'Loaded the newer data from your other device ('+fmtT(Date.parse(P.t))+').'},'pending'));
+  c.last={sha:remote.sha,sig:sigOf(merged)};c.err='';c.rebase=1;sySave(c);
+  location.reload();
+}
+function syChoose(){
+  return new Promise(res=>{
+    let d=$('#dsc');if(!d){d=document.createElement('dialog');d.id='dsc';d.setAttribute('aria-label','Sync conflict');document.body.appendChild(d)}
+    d.innerHTML=`<form method="dialog"><h2>☁ Two versions found</h2><p>This device and your synced copy both have data that differs.</p><p class="cmu"><b>Setting up a new device?</b> Choose “Use the synced data”. Otherwise pick the side that has your latest changes. Nothing is lost either way: this device’s data is saved as a safety copy first, and GitHub keeps the history of the synced file.</p><div class="acts" style="flex-wrap:wrap"><button type="button" class="btn" data-c="x">Decide later</button><button type="button" class="btn" data-c="local">Keep this device’s data</button><button type="button" class="btn p" data-c="remote">Use the synced data</button></div></form>`;
+    let done=false;const fin=v=>{if(done)return;done=true;if(d.open)d.close();res(v)};
+    d.onclick=e=>{const b=e.target.closest('[data-c]');if(b)fin(b.dataset.c==='x'?null:b.dataset.c)};d.oncancel=()=>fin(null);d.showModal();
+  });
+}
+async function syncRun(mode){
+  const c=syCfg();if(!c||!c.repo||!c.token||!c.pass||syBusy)return;
+  if(mode!=='manual'&&c.auto===false)return;
+  if(!navigator.onLine){if(mode==='manual')toast('You are offline. Sync will run when you are back online.','er',6000);return}
+  syBusy=true;syUI=mode==='manual';
+  try{
+    const remote=await syRemote(c),last=c.last||{},sg=sigOf(),m=metrics();
+    const blank=m.nz===0&&!LS.get('home_ops_v1'),remoteChanged=remote.sha!==(last.sha||null);
+    let localChanged=sg!==last.sig;
+    const gap=Date.now()-(c.lastPush||0)<3e5;
+    if(!remote.sha){
+      if(blank){if(mode==='manual')toast('Nothing to upload yet: this device has no data.','',5000);return}
+      if(mode!=='manual'&&gap)return;
+      await syDoPush(c,remote);if(mode==='manual')toast('☁ Uploaded. Your other devices can now load this data.','ok',5000);return;
+    }
+    if(blank&&!last.sig)localChanged=false; /* brand-new empty device: take the synced data */
+    if(!localChanged&&!remoteChanged){if(mode==='manual')toast('✅ Already up to date.','ok',4000);return}
+    if(localChanged&&!remoteChanged){
+      if(mode!=='manual'&&gap)return;
+      await syDoPush(c,remote);if(mode==='manual')toast('☁ Synced ✓','ok',3500);return;
+    }
+    if(!localChanged&&remoteChanged){
+      if(mode==='tick'){if(syNote!==remote.sha){syNote=remote.sha;toast('☁ Newer data from another device is ready.','',20000,{label:'Load it',fn:()=>syncRun('manual')})}return}
+      await syDoPull(c,remote);return;
+    }
+    if(mode!=='manual'){if(syNote!==remote.sha){syNote=remote.sha;toast('☁ This device and your synced copy both changed.','er',20000,{label:'Review',fn:()=>syncRun('manual')})}return}
+    const ch=await syChoose();
+    if(ch==='remote')await syDoPull(c,remote);
+    else if(ch==='local'){await snapTake('before sync overwrite',true);await syDoPush(c,remote);toast('☁ Uploaded this device’s data.','ok',4000)}
+  }catch(e){
+    console.warn('sync',e);c.err=e.message||String(e);sySave(c);
+    if(mode==='manual'||e.status===401||e.status===403)toast('☁ Sync problem: '+c.err,'er',12000);
+  }finally{busy('');syBusy=false;syUI=false}
+}
+async function openSync(){
+  let d=$('#dsy');
+  if(!d){d=document.createElement('dialog');d.id='dsy';d.setAttribute('aria-label','Sync between devices');document.body.appendChild(d);
+    d.addEventListener('click',async e=>{
+      const b=e.target.closest('[data-sy]');if(!b)return;const a=b.dataset.sy,err=$('#sy-err');
+      if(a==='off'){if(confirm('Disconnect sync on this device? Your data stays here and in the repository.')){localStorage.removeItem(SYK);syKey=null;d.close();toast('Sync disconnected on this device.','',4000)}return}
+      if(a!=='go')return;
+      const old=syCfg()||{},repo=$('#sy-repo').value.trim().replace(/^https?:\/\/github\.com\//i,'').replace(/\.git$/,'').replace(/\/+$/,''),tok=$('#sy-tok').value.trim()||old.token||'',pw=$('#sy-pw').value||old.pass||'';
+      err.textContent='';
+      if(!/^[\w.-]+\/[\w.-]+$/.test(repo))return err.textContent='Enter the repository as owner/name, for example yourname/life-hub-data.';
+      if(!tok)return err.textContent='Paste your GitHub token.';
+      if(pw.length<10)return err.textContent='Use a sync passphrase of at least 10 characters.';
+      if(!canCrypt())return err.textContent='Encryption needs a secure page (https).';
+      const c={repo,branch:$('#sy-br').value.trim(),token:tok,pass:pw,auto:$('#sy-auto').checked,last:null};
+      busy('Testing connection…');
+      try{
+        const r=await gh(c,'/repos/'+repo);busy('');
+        if(r.permissions&&!r.permissions.push)return err.textContent='This token can read the repository but not write to it. Give it “Contents: Read and write”.';
+        if(!r.private&&!confirm('This repository is PUBLIC. Your data is encrypted, but a private repository is much safer.\n\nContinue anyway?'))return;
+        c.branch=c.branch||r.default_branch||'main';
+      }catch(ex){busy('');return err.textContent=ex.status===404?'Repository not found, or this token has no access to it.':ex.status===401?'GitHub rejected the token (mistyped or expired).':ex.message}
+      if(old.repo===repo&&old.branch===c.branch)c.last=old.last||null;
+      syKey=null;sySave(c);d.close();syncRun('manual');
+    });
+  }
+  const c=syCfg();
+  d.innerHTML=`<form method="dialog"><h2>☁ Sync between devices</h2>
+<p class="cmu">Keeps an <b>encrypted</b> copy of everything, including documents, in a private GitHub repository you own. Your data is scrambled on this device before upload; GitHub only ever sees unreadable files.</p>
+<div class="note${c&&!c.err?' ok':''}">${c?(c.err?'⚠ '+esc(c.err):'✅ Connected to '+esc(c.repo)+(c.lastPush?' · uploaded '+fmtT(c.lastPush):'')):'Not connected yet.'}</div>
+<label>Repository (owner/name)<input id="sy-repo" type="text" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="yourname/life-hub-data" value="${esc(c?c.repo:'')}"></label>
+<label>Branch (optional)<input id="sy-br" type="text" autocapitalize="off" autocomplete="off" placeholder="main" value="${esc(c?c.branch:'')}"></label>
+<label>GitHub token<input id="sy-tok" type="password" autocomplete="off" placeholder="${c?'saved on this device, leave empty to keep':'github_pat_…'}"></label>
+<label>Sync passphrase<input id="sy-pw" type="password" autocomplete="off" placeholder="${c?'saved on this device, leave empty to keep':'at least 10 characters'}"></label>
+<label class="chk"><input type="checkbox" id="sy-auto"${!c||c.auto!==false?' checked':''}> Sync automatically (when the app opens and after changes)</label>
+<p class="cmu">Use the <b>same passphrase on every device</b>. If you forget it, the synced copy cannot be read, but the data on your devices is untouched. The token and passphrase are stored on this device only and are never part of backups or sync.</p>
+<details><summary>How to set this up (about 2 minutes)</summary><ol class="cmu" style="padding-left:1.1rem;line-height:1.5">
+<li>On github.com create a new <b>private</b> repository (for example <i>life-hub-data</i>) and tick “Add a README”.</li>
+<li>GitHub → Settings → Developer settings → Fine-grained tokens → Generate new token. Under <i>Repository access</i> choose <b>Only select repositories</b> and pick that one repo. Under <i>Permissions → Repository permissions</i> set <b>Contents: Read and write</b>.</li>
+<li>Paste the repo name, the token and a passphrase above, then press Connect &amp; sync. Repeat on each device with the same repo, token and passphrase.</li></ol></details>
+<div class="err" id="sy-err"></div>
+<div class="acts" style="flex-wrap:wrap">${c?'<button type="button" class="btn" data-sy="off">Disconnect</button>':''}<button class="btn" value="x">Close</button><button type="button" class="btn p" data-sy="go">${c?'Save &amp; sync now':'Connect &amp; sync'}</button></div></form>`;
+  if(!d.open)d.showModal();
+}
+function lhAfterInit(){
+  try{const n=sessionStorage.getItem('lh_note');if(n){sessionStorage.removeItem('lh_note');toast('✅ '+n,'ok',9000)}}catch(e){}
+  addEventListener('click',storageAsk,{once:true});
+  setTimeout(snapTick,15000);setInterval(snapTick,6e4);
+  setTimeout(()=>{const c=syCfg();if(c&&c.rebase){c.last=c.last||{};c.last.sig=sigOf();delete c.rebase;sySave(c)}},3000);/* apps tidy their data after loading synced data; that is not a user change */
+  setTimeout(()=>syncRun('boot'),4000);
+  setInterval(()=>{const c=syCfg();if(c&&c.auto!==false&&sigOf()!==(c.last||{}).sig)syncRun('tick')},6e4);
+  setInterval(()=>syncRun('tick'),3e5);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncRun('tick')});
+  addEventListener('online',()=>syncRun('tick'));
+}
+
+function init(){
   document.documentElement.dataset.theme=theme;
   const fresh=LS.get('home_ops_v1')===null&&LS.get('networth_intel_accounts_v7')===null;
   let hs=null;try{hs=sessionStorage.getItem(K.hint)}catch(e){}if(fresh&&!LS.get(K.hint)&&!hs)$('#hint').hidden=false;
@@ -1720,7 +2050,9 @@ window.__hub={exportDialog,importPick,toggleTheme};
   /* bring up the other app shortly after, so Backup / Restore are instant */
   startOvTimer();
   setTimeout(()=>{mount('home');mount('net')},start==='overview'?0:1200);
-})();
+  lhAfterInit();
+}
+lhBoot().then(init,init);
 </script>
 <script>
 /* offline support: register the service worker (needs https or localhost) */

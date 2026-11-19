@@ -1,6 +1,6 @@
 /* Life Hub service worker: makes the app load offline.
    Bump VERSION whenever you upload a new index.html so phones pick it up. */
-const VERSION = 'lifehub-v2';
+const VERSION = 'lifehub-v3';
 const SHELL = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png', './icons/apple-touch-icon.png'];
 

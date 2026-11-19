@@ -29,3 +29,8 @@ MOVING YOUR DATA
 
 UPDATING LATER
   Upload the new index.html and change VERSION in sw.js (e.g. lifehub-v2).
+
+SYNC & SAFETY (new)
+  Settings > "Sync devices" connects an encrypted private GitHub repo.
+  Settings > "Safety copies" lists automatic restore points kept on this device.
+  Use a SEPARATE private repository for sync data, never the repository that serves this app.

@@ -43,3 +43,7 @@ PERFORMANCE (new)
 BILL ESTIMATOR (new)
   Home > Utils now starts with a Monthly bill estimator for electricity and gas:
   enter usage (or meter readings) and your tariff to see the expected bill.
+
+WORK TAB
+  The Work tab (schedule, pay, pay calculator, tasks, leave and sick days, Lithuanian
+  public holidays) is the 5th tab. Its data is included in Backup, Safety copies and Sync.

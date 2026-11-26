@@ -47,3 +47,9 @@ BILL ESTIMATOR (new)
 WORK TAB
   The Work tab (schedule, pay, pay calculator, tasks, leave and sick days, Lithuanian
   public holidays) is the 5th tab. Its data is included in Backup, Safety copies and Sync.
+
+SWIPE & MOBILE LAYOUT
+  On phones and tablets, swipe left or right to move between Life Hub, Home, Net, School and Work.
+  Swipes that start on a scrolling strip, a chart, a form field or the very edge of the screen are ignored.
+  Home > Utils: the utility log shows the latest two months, with a button for older months.
+  Net Worth on phones: Snapshot, Report, API keys, exchange rates and Reset live under the ... menu.

@@ -34,3 +34,12 @@ SYNC & SAFETY (new)
   Settings > "Sync devices" connects an encrypted private GitHub repo.
   Settings > "Safety copies" lists automatic restore points kept on this device.
   Use a SEPARATE private repository for sync data, never the repository that serves this app.
+
+PERFORMANCE (new)
+  Net Worth > Equities now starts with a Performance panel: total return per position,
+  closed positions with holding period, annualised return, results by year.
+  To add past buys without changing holdings, tick "log only" in the Trade Log.
+
+BILL ESTIMATOR (new)
+  Home > Utils now starts with a Monthly bill estimator for electricity and gas:
+  enter usage (or meter readings) and your tariff to see the expected bill.

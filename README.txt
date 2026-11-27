@@ -53,3 +53,8 @@ SWIPE & MOBILE LAYOUT
   Swipes that start on a scrolling strip, a chart, a form field or the very edge of the screen are ignored.
   Home > Utils: the utility log shows the latest two months, with a button for older months.
   Net Worth on phones: Snapshot, Report, API keys, exchange rates and Reset live under the ... menu.
+
+LATEST CHANGES
+  Home > Utils: redesigned utility log (colour-coded water / electricity / gas cards on phones,
+  full-width table on desktop, latest two months shown with a button for older months).
+  Net Worth on phones: smaller "+ Add" button; the ... menu opens as a sheet that is always on screen.
